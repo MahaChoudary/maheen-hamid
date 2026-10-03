@@ -1,0 +1,35 @@
+{
+  "tool": "image_gen",
+  "purpose": "Distinct editorial cover artwork for the six published articles",
+  "assets": [
+    {
+      "file": "public/images/blog/human-ai.webp",
+      "prompt": "Editorial technology cover, wide landscape 3:2 composition for an AI engineering blog titled Will AI Replace Humans or Change How We Work. Photorealistic premium conceptual still life: a human hand placing a warm ivory chess piece beside a translucent glass computational lattice on a brushed graphite desk, collaboration and judgment rather than humanoid robots. Architectural studio lighting, deep ink backdrop, restrained teal highlights, elegant negative space, tactile details, sophisticated magazine photography. No text, no logos, no neon cyberpunk, no generic stock imagery."
+    },
+    {
+      "file": "public/images/blog/agents-chatbots.webp",
+      "prompt": "Premium editorial technology artwork, landscape 3:2. A sculptural branching arrangement of translucent glass blocks and brushed steel connectors, one single pearl sphere at left and several precise tool-like modules interconnected on right, visually contrasting a single conversation with coordinated actions. Deep graphite architectural scene, teal and warm ivory highlights, cinematic studio light, elegant technical still life, rich depth, restrained and sophisticated. No text, logos, humanoid robots or gaming aesthetic."
+    },
+    {
+      "file": "public/images/blog/rag-2026.webp",
+      "prompt": "Premium editorial technology cover artwork landscape 3:2: a luminous lens hovering over a beautifully arranged library of thin translucent document panels, selected panels connected by restrained teal light paths into a central prism. Visual metaphor for finding relevant evidence among private documents. Deep graphite and warm ivory, tactile glass and paper, crisp architectural studio lighting, elegant composition and negative space. No text, letters, logos, robotic faces, cyberpunk or stock icons."
+    },
+    {
+      "file": "public/images/blog/backend-ai.webp",
+      "prompt": "Premium editorial engineering cover artwork landscape 3:2: a cutaway architectural miniature of a distributed backend, layered brushed graphite platforms, a central translucent compute cube, small amber queue capsules and organized teal connection paths between storage cylinders and service blocks. Precise physical model, tactile metallic surfaces, sophisticated cinematic studio light, subtle warm ivory details and deep dimensional shadows. No text, code, logos, giant neon effects, humanoid robots."
+    },
+    {
+      "file": "public/images/blog/frontend-ai.webp",
+      "prompt": "Premium editorial frontend engineering cover artwork landscape 3:2: floating layered frosted glass interface panes above a warm ivory architectural base, carefully aligned colored geometric content tiles with one magnifying glass-like clear disc highlighting a focus state, restrained teal and muted blue accents on graphite background. No readable text or icons, no UI screenshots, elegant gallery installation, cinematic light, refined professional technology magazine aesthetic, physical depth, not generic abstract waves."
+    },
+    {
+      "file": "public/images/blog/coding-agents.webp",
+      "prompt": "Premium editorial software engineering cover artwork landscape 3:2: an elegant mechanical drafting desk with a precise steel pen, a luminous translucent prism and a partially assembled architectural structure of modular graphite blocks, one warm orange block being positioned by a slender mechanical tool. Metaphor for AI assisted building and human design judgment. Rich tactile materials, restrained teal highlights, warm ivory paper, cinematic studio lighting, deep graphite backdrop, sophisticated and professional. No text, code, logos, humanoid robots, neon gaming or generic icons."
+    }
+  ],
+  "optimization": "Generated raster originals were resized to 1440px width and encoded as quality-84 WebP. The uploaded professional JPEG was normalized to WebP without semantic editing.",
+  "portrait": {
+    "file": "public/images/maheen-professional.webp",
+    "source": "User-uploaded professional photo (1766411640776(1).jfif)"
+  }
+}

@@ -1,0 +1,1 @@
+export const themeBootstrap=`(()=>{try{const p=localStorage.getItem('maheen.theme');document.documentElement.dataset.theme=p==='light'||p==='dark'?p:matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch{document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}})()`;

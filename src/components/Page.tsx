@@ -1,0 +1,6 @@
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+export function PageIntro({number,label,title,accent,description}:{number:string,label:string,title:string,accent?:string,description:string}){return <div className="page-intro"><div className="intro-top"><span className="eyebrow">{number} / {label}</span><span className="intro-line"/></div><h1>{title}{accent&&<> <em>{accent}</em></>}</h1><p>{description}</p></div>}
+export function SectionTitle({eyebrow,title,aside}:{eyebrow:string,title:string,aside?:string}){return <div className="section-title"><div><span className="eyebrow">{eyebrow}</span><h2>{title}</h2></div>{aside&&<p>{aside}</p>}</div>}
+export function LinkArrow({href,children,className=''}:{href:string,children:React.ReactNode,className?:string}){return <Link href={href} className={`link-arrow ${className}`}>{children}<ArrowUpRight size={17}/></Link>}
+export function LabNav({current}:{current:string}){const links=[['Systems','/lab/systems'],['Mira','/lab/assistant'],['Tech Explainer','/lab/explainer'],['Matcher','/lab/matcher'],['Workflow','/lab/how-it-works'],['Terminal','/lab/terminal']];return <nav className="lab-subnav" aria-label="Lab experiences">{links.map(([label,href])=><Link key={href} href={href} aria-current={current===href?'page':undefined} className={current===href?'active':''}>{label}</Link>)}</nav>}

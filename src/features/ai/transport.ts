@@ -1,0 +1,10 @@
+import type { ApiError,Kind,StreamMessage } from './contracts';
+export class ClientApiError extends Error {constructor(public detail:ApiError){super(detail.message)}}
+export async function submitAi(kind:Kind,body:unknown,signal:AbortSignal,onMessage:(message:StreamMessage)=>void){
+ const response=await fetch({assistant:'/api/assistant',match:'/api/match',explain:'/api/explain'}[kind],{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/x-ndjson'},body:JSON.stringify(body),cache:'no-store',signal});
+ if(!response.ok){let error:ApiError;try{error=await response.json()}catch{error={code:'NETWORK_ERROR',message:'The backend response could not be read. Please retry deliberately.'}}throw new ClientApiError(error)}
+ if(!response.body)throw new ClientApiError({code:'INCOMPLETE_RESPONSE',message:'The backend returned no result stream.'});
+ const reader=response.body.getReader();const decoder=new TextDecoder();let pending='';let terminal=false;
+ function line(raw:string){if(!raw.trim())return;let message:StreamMessage;try{message=JSON.parse(raw)}catch{throw new ClientApiError({code:'INCOMPLETE_RESPONSE',message:'The request stream was interrupted or malformed.'})}if(!message||!['event','result','error'].includes(message.type))throw new ClientApiError({code:'INCOMPLETE_RESPONSE',message:'The backend returned an invalid stream event.'});onMessage(message);if(message.type==='result'||message.type==='error')terminal=true;}
+ try{for(;;){const {value,done}=await reader.read();if(done)break;pending+=decoder.decode(value,{stream:true});if(pending.length>200000)throw new ClientApiError({code:'INCOMPLETE_RESPONSE',message:'The backend response exceeded its safety limit.'});let at;while((at=pending.indexOf('\n'))>=0){line(pending.slice(0,at));pending=pending.slice(at+1)}}pending+=decoder.decode();if(pending.trim())line(pending);if(!terminal)throw new ClientApiError({code:'INCOMPLETE_RESPONSE',message:'The connection ended before a complete result. No answer was accepted.'});}finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
+}

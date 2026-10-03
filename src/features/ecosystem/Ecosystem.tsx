@@ -1,0 +1,5 @@
+import { Code2,Workflow,Database,Cloud,Activity,GitBranch,WandSparkles,Monitor } from 'lucide-react';
+import { ecosystem } from '@/content/ecosystem';
+import { Reveal } from '@/components/Reveal';
+const icons=[Workflow,Code2,Database,GitBranch,Cloud,Monitor,WandSparkles,Activity];
+export function Ecosystem(){return <div className="ecosystem"><div className="ecosystem-toolbar"><div><span className="eyebrow">TECH STACK / ENGINEERING ECOSYSTEM</span><p>A connected map of technologies relevant to my engineering direction. Tools are grouped by purpose; this is not a proficiency rating or a claim of production experience with every platform.</p></div></div><div className="ecosystem-grid">{ecosystem.map((group,i)=>{const Icon=icons[i];return <Reveal key={group.title} delay={i%3*60}><article className="ecosystem-card"><div className="ecosystem-heading"><Icon size={23} aria-hidden="true"/><span className="mono">{String(i+1).padStart(2,'0')}</span></div><h2>{group.title}</h2><p>{group.description}</p><ul>{group.tools.map(tool=><li key={tool.name}><span>{tool.name}</span></li>)}</ul></article></Reveal>})}</div></div>}
