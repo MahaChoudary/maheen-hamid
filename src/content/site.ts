@@ -131,7 +131,6 @@ export const nav = [
 export const miraPrompts = [
   'Who is Maheen?',
   'How does she combine RAG and full-stack apps?',
-  'What is Wukala-GPT?',
   'Is she available for remote work?',
 ] as const;
 
