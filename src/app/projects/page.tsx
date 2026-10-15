@@ -1,8 +1,134 @@
+
+/* eslint-disable @next/next/no-img-element */
+
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { PageIntro } from '@/components/Page';
-import { DiagramView } from '@/features/explainer/DiagramView';
 import { publishedProjects } from '@/content/projects';
 import { canonicalFor } from '@/lib/seo';
-export const metadata={...canonicalFor('/projects'),title:'Projects',description:'AI applications, architecture and implementation decisions by Maheen Hamid.'};
-export default function Projects(){return <><div className="container"><PageIntro number="02" label="PROJECTS" title="The work behind" accent="the thinking." description="How retrieval, agent workflows and application engineering come together."/></div><section className="section container" id="project-evidence">{publishedProjects.map(project=><article className="project-feature" key={project.slug}><div><span className="eyebrow">01 / {project.category}</span><h2><Link href={`/projects/${project.slug}`}>{project.title}</Link></h2><p>{project.summary}</p><ul className="tool-list">{project.stack?.map(tool=><li key={tool}>{tool}</li>)}</ul><Link className="button button-primary" href={`/projects/${project.slug}`}>Explore the project <ArrowUpRight size={17}/></Link></div>{project.diagram&&<DiagramView diagram={project.diagram} title={project.title}/>}</article>)}<div className="project-end"><span>MORE AI ENGINEERING WORK WILL JOIN THIS COLLECTION.</span><Link href="/lab">Explore the Lab ↗</Link></div></section></>}
+import styles from '@/features/projects/ProjectShowcase.module.css';
+
+export const metadata = {
+  ...canonicalFor('/projects'),
+  title: 'Projects',
+  description: 'AI applications and engineering case studies.',
+};
+
+export default function Projects() {
+  return (
+    <main className={styles.projectsMain}>
+      <div className="container">
+
+        <header className={styles.listingHeading}>
+          <div>
+            <span className="eyebrow">
+              02 / SELECTED WORK
+            </span>
+
+            <h1>
+              Ideas made <em>real.</em>
+            </h1>
+
+            <p>
+              AI systems, thoughtfully built and presented.
+            </p>
+          </div>
+
+          <span className={styles.projectCount}>
+            {String(publishedProjects.length).padStart(2, '0')}
+            {' '}PROJECTS
+          </span>
+        </header>
+
+        <div id="project-evidence" className={styles.cardsGrid}>
+          {publishedProjects.map((project, index) => (
+            <article
+              className={styles.projectCard}
+              key={project.slug}
+            >
+              {/* Full cover without cropping */}
+
+              <Link
+                href={`/projects/${project.slug}`}
+                className={styles.cardCover}
+                aria-label={`Explore ${project.title}`}
+              >
+                {project.visuals?.cover ? (
+                  <img
+                    src={project.visuals.cover}
+                    alt={`${project.title} project cover`}
+                    className={styles.coverImage}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                ) : (
+                  <div className={styles.coverFallback}>
+                    {project.title}
+                  </div>
+                )}
+              </Link>
+
+              {/* Project information */}
+
+              <div className={styles.cardDetails}>
+                <div className={styles.cardCopy}>
+
+                  <span className="eyebrow">
+                    {project.category}
+                  </span>
+
+                  <div className={styles.cardTitleRow}>
+                    {project.visuals?.logo && (
+                      <span className={styles.cardLogo}>
+                        <img
+                          src={project.visuals.logo}
+                          alt={`${project.title} logo`}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </span>
+                    )}
+
+                    <h2>{project.title}</h2>
+                  </div>
+
+                  <p>{project.summary}</p>
+
+                  <div className={styles.stackPills}>
+                    {project.stack?.slice(0, 4).map((tool) => (
+                      <span key={tool}>
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className={styles.exploreButton}
+                >
+                  Explore My Project
+                  <ArrowUpRight
+                    size={18}
+                    aria-hidden="true"
+                  />
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className={styles.endNote}>
+          <span>
+            MORE AI ENGINEERING WORK COMING SOON
+          </span>
+
+          <Link href="/lab">
+            Visit the Lab
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+
+      </div>
+    </main>
+  );
+}

@@ -231,3 +231,7 @@ At 20 AI requests/day there are at most about 620 accepted requests in a 31-day 
 - [Cloudflare Next deployment paths](https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/) and [Worker pricing](https://developers.cloudflare.com/workers/platform/pricing/)
 
 [DEFERRED] Integration/content facts: actual provider account entitlements, deployment eligibility, credentials/domain/repository, supplied CV contents, future project evidence and asset derivatives. These are explicit integration/content prerequisites, not unanswered architecture choices. The design, data contracts and safety boundaries are decided here. Phase 5 handoff follows; the next execution gate is approval of the complete working frontend before backend/AI implementation.
+
+
+
+// run this command to upload pdf --> New-Item -ItemType Directory -Force ".\maheen-ai-portfolio\public\documents" | Out-Null; Copy-Item "$env:USERPROFILE\Downloads\maheen-hamid-resume.pdf" ".\maheen-ai-portfolio\public\documents\maheen-hamid-resume.pdf" -Force
