@@ -62,9 +62,10 @@ export function validateAssistant(payload: unknown, selected: Source[], intent =
   const data = parsed.data as z.infer<typeof assistantOutput>;
   const supported = data.status === 'supported' || data.status === 'partial';
   const ids = new Set(data.claims.flatMap(c => c.sourceIds));
-  let cited = selected.filter(s => s.public && ids.has(s.id));
-
-  if (supported && intent === 'portfolio' && !cited.length) cited = selected.filter(s => s.public);
+  const allowedIds = new Set(selected.filter(source => source.public).map(source => source.id));
+  if (supported && intent === 'portfolio' && (!data.claims.length || [...ids].some(id => !allowedIds.has(id))))
+    reject('INVALID_SOURCE_CITATION');
+  const cited = selected.filter(s => s.public && ids.has(s.id));
 
   if (supported && intent === 'portfolio' && !cited.length) {
     const answer = 'That information is not documented in this portfolio.';
@@ -107,12 +108,9 @@ const matcherRequirement = z.object({
 }).passthrough();
 const matcherEnvelope = z.record(z.string(),z.unknown());
 function safeMatcherText(text:string, fallback:string):string {
-  const safe=text.split(/(?<=[.!?])\s+/).map(sentence=>sentence.trim()).filter(Boolean).filter(sentence=>{
-    if(!/\b(?:Maheen|she|her|Wukala)\b/i.test(sentence)) return true;
-    try { checkAssistantFacts(sentence, evidenceFor([])); return true; }
-    catch { return false; }
-  });
-  return safe.join(' ')||fallback;
+  const sentences=text.split(/(?<=[.!?])\s+/).map(sentence=>sentence.trim()).filter(Boolean);
+  for(const sentence of sentences)if(/\b(?:Maheen|she|her)\b/i.test(sentence))checkAssistantFacts(sentence,[]);
+  return sentences.join(' ')||fallback;
 }
 
 export function validateMatcher(payload: unknown, selected: Source[], job: string): AiResult {
@@ -123,11 +121,9 @@ export function validateMatcher(payload: unknown, selected: Source[], job: strin
     const parsed = matcherRequirement.safeParse(item);
     return parsed.success ? [parsed.data] : [];
   });
-  const normalizedRequirements = parsedRequirements.length ? parsedRequirements : jobRequirements.map(quote=>({
-    quote, priority:'unspecified' as const, category:'needs_clarification' as const,
-    explanation:'The provider did not return a verifiable comparison for this requirement.',
-    evidence:[],
-  }));
+  if(!parsedRequirements.length||parsedRequirements.length!==rawRequirements.length)reject('INVALID_MATCHER_OUTPUT');
+  if(parsedRequirements.some(requirement=>!job.includes(requirement.quote)))reject('FABRICATED_JOB_REQUIREMENT');
+  const normalizedRequirements = parsedRequirements;
   if (!normalizedRequirements.length) reject('INVALID_MATCHER_OUTPUT');
   const envelope = {
     roleSnapshot:typeof raw.roleSnapshot==='string'&&raw.roleSnapshot.trim()?raw.roleSnapshot:'This role combines technical skills with practical delivery requirements.',

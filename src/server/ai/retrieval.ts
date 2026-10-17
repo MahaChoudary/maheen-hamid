@@ -4,10 +4,17 @@ import { semanticIndex } from './semantic';
 import corpus from '@/generated/knowledge.json';
 export const contentVersion=corpus.contentVersion;
 export const sources:Source[]=corpus.sources.map(source=>sourceSchema.parse(source));
+const projectSources=sources.filter(source=>source.type==='documented project evidence');
 const stop=new Set('a an the and or but of to for in on at by with is are was were be been being do does did how what which why when where who can could would should have has had i me my you your her she maheen hamid about tell explain describe please looking seeking we our us as from this that it its not any know like some'.split(' '));
-const aliases:Record<string,string[]>={ specialize:['skills','rag'], specializes:['skills','rag'], strongest:['skills','rag'], technologies:['skills','capability'], built:['projects','wukala'], background:['education','story'], llm:['ai','reasoning'], agent:['agents','agentic','langgraph'], agents:['agentic','langgraph'], rag:['retrieval','embeddings'], retriever:['retrieval'], fullstack:['full','stack','frontend','backend'], 'full-stack':['frontend','backend','apis','react'], apps:['applications','products','react','apis'], backend:['apis','fastapi','python','database'], frontend:['react','typescript'], databases:['postgresql','qdrant','redis'], remote:['opportunities','availability'], job:['opportunities','availability'], graduate:['education','university'], resume:['cv'], typescript:['react','frontend'], docker:['infrastructure'], skill:['skills','capability'], skills:['capability'], motivation:['story'], experience:['capability'] };
+const aliases:Record<string,string[]>={ specialize:['skills','rag'], specializes:['skills','rag'], strongest:['skills','rag'], technologies:['skills','capability'], built:['projects','project'], background:['education','story'], llm:['ai','reasoning'], agent:['agents','agentic','langgraph'], agents:['agentic','langgraph'], rag:['retrieval','embeddings'], retriever:['retrieval'], fullstack:['full','stack','frontend','backend'], 'full-stack':['frontend','backend','apis','react'], apps:['applications','products','react','apis'], backend:['apis','fastapi','python','database'], frontend:['react','typescript'], databases:['postgresql','qdrant','redis'], remote:['opportunities','availability'], job:['opportunities','availability'], graduate:['education','university'], resume:['cv'], typescript:['react','frontend'], docker:['infrastructure'], skill:['skills','capability'], skills:['capability'], motivation:['story'], experience:['capability'] };
 export function terms(text:string){return text.toLowerCase().normalize('NFKC').replace(/[^\p{L}\p{N}+#.-]/gu,' ').split(/\s+/).filter(x=>x.length>1&&!stop.has(x));}
 const expand=(query:string)=>[...new Set(terms(query).flatMap(w=>[w,...(aliases[w]||[])]))];
+const normalizeProjectName=(value:string)=>value.toLowerCase().normalize('NFKC').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+function namedProjectSources(query:string):Source[]{
+ const normalized=` ${normalizeProjectName(query)} `;
+ return projectSources.filter(source=>normalized.includes(` ${normalizeProjectName(source.title)} `));
+}
+const requestsAllProjects=(query:string)=>/\b(?:all|what|which|list|show|compare)\b[^?]{0,60}\bprojects?\b|\bprojects?\s+(?:has|have|did)\b/i.test(query);
 let semantic:ReturnType<typeof semanticIndex>|undefined;
 export function recruiterIntent(query:string):'identity'|'unknown'|'topic'{
  if(/(?:how many years?|years? of (?:professional |work )?experience|professional experience|worked (?:at|for)|\b(?:her|maheen(?:[’']s)?) (?:employers?|salary|visa|relocation|work authorization)\b|\b(?:salary|visa|relocation|work authorization)\b)/i.test(query))return 'unknown';
@@ -30,7 +37,6 @@ export function retrievalScores(query:string,matcher=false){
  const lexicalRank=[...ranked].filter(x=>x.lexical>0).sort((a,b)=>b.lexical-a.lexical);
  const semanticRank=[...ranked].filter(x=>x.semantic>=.18).sort((a,b)=>b.semantic-a.semantic);
  for(const x of ranked){const l=lexicalRank.indexOf(x),v=semanticRank.indexOf(x);x.score=(l>=0?1/(20+l):0)+(v>=0?.8/(20+v):0);
-  if(/wukala|built|build with|rag experience/i.test(query)&&x.source.id==='cv-project-wukala')x.score+=.06;
   if(/skills|specializ|technologies/i.test(query)&&/^(capability|cv-ai)/.test(x.source.id))x.score+=.018;
  }
  // Use the same semantic candidates for selection as fusion; weak wording is
@@ -40,6 +46,9 @@ export function retrievalScores(query:string,matcher=false){
 export function retrieve(query:string,matcher=false,context=''):Source[]{
  if(!matcher&&recruiterIntent(query)==='unknown')return [];
  if(!matcher&&recruiterIntent(query)==='identity')return ['profile-identity','profile-education','cv-summary','profile-story','profile-availability'].map(id=>sources.find(s=>s.id===id)!);
- return retrievalScores(context?`${query} ${context}`:query,matcher).slice(0,5).map(x=>x.source);
+ const combined=context?`${query} ${context}`:query;
+ const pinned=requestsAllProjects(query)?projectSources:namedProjectSources(combined);
+ const ranked=retrievalScores(combined,matcher).map(result=>result.source);
+ return [...pinned,...ranked.filter(source=>!pinned.some(project=>project.id===source.id))].slice(0,Math.max(5,pinned.length));
 }
 export function evidenceFor(selected:Source[]){return selected.map(source=>({source,quote:source.text}));}

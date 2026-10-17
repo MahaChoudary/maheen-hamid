@@ -1,5 +1,5 @@
 import { profile, capabilities, resume } from './site';
-import { publishedProjects } from './projects';
+import { projectArchitecture, publishedProjects } from './projects';
 // Reviewed public content only. Internal plans, visitor text and mock fixtures are excluded.
 const record = (id:string,title:string,text:string,href:string,type:string,tags:string) => ({id,title,text,href,type,tags,reviewedAt:'2026-10-01',public:true as const});
 export const knowledgeSources = [
@@ -14,8 +14,22 @@ export const knowledgeSources = [
  record('cv-agents','Agent tools — supplied CV','Maheen’s supplied CV lists LangGraph, LangChain and Hugging Face among her AI frameworks and tools. These are owner-supplied skills, not proof of a particular professional level.','/resume#resume-title','owner-stated capability','langgraph langchain agents workflow hugging face'),
  record('cv-backend','Backend and data — supplied CV','Maheen’s supplied CV lists Python, SQL, TypeScript, FastAPI, REST APIs and Async Python; PostgreSQL, Qdrant, pgvector and Redis; Docker, Git and GitHub Actions. These are owner-supplied skills, not proof of employment or production tenure.','/resume#resume-title','owner-stated capability','python fastapi async backend api rest docker git database postgres qdrant redis pgvector cicd'),
  record('cv-evaluation','Evaluation — supplied CV','Maheen’s supplied CV lists PyTorch, scikit-learn, model evaluation and fine-tuning, alongside RAG evaluation, faithfulness, answer relevance and hallucination analysis. These are owner-supplied areas, not benchmark results.','/resume#resume-title','owner-stated capability','evaluation rag faithfulness relevance hallucination pytorch scikit learn fine tuning'),
- record('cv-project-wukala','Wukala-GPT — supplied CV','In her supplied CV, Maheen reports building core components of Wukala-GPT, a multi-agent legal AI system with RAG, vector search, document analysis and LLM integration. She reports designing retrieval pipelines and agent workflows and connecting APIs, authentication and an AI service, then testing document-grounded legal assistance and lawyer discovery across the architecture. Its listed stack is React, ASP.NET Core, FastAPI, PostgreSQL, Qdrant, Redis, LangGraph and Docker. These are owner-supplied project statements; no independent metrics or professional tenure are inferred.','/resume#resume-title','documented project evidence','wukala gpt built project rag full stack legal retrieval agents langgraph docker react fastapi'),
  record('profile-contact','Public contact',`Email: ${profile.email}. Phone: ${profile.phone}. LinkedIn: ${profile.linkedin}. GitHub: ${profile.github}.`,'/contact#contact','profile','contact email phone linkedin github'),
- record('profile-projects','Project evidence','Wukala-GPT is one of Maheen’s projects. A case study covers its documented architecture and contribution.','/projects#project-evidence','profile','projects wukala gpt portfolio evidence'),
- ...publishedProjects.map(p=>record(`project-${p.slug}`,p.title,[p.summary,p.problem,p.role,...p.decisions,p.outcomes,p.limitations].join('\n'),`/projects/${p.slug}`,'documented project evidence',p.category)),
+ ...publishedProjects.map(p=>record(
+  `project-${p.slug}`,
+  p.title,
+  [
+   `Purpose: ${p.summary}`,
+   `Problem: ${p.problem}`,
+   `Contribution: ${p.role}`,
+   `Architecture decisions: ${p.decisions.join(' ')}`,
+   projectArchitecture(p),
+   `Technology stack: ${(p.stack ?? []).join(', ') || 'Not documented.'}`,
+   `Outcomes: ${p.outcomes}`,
+   `Limitations: ${p.limitations}`,
+  ].join('\n'),
+  `/projects/${p.slug}`,
+  'documented project evidence',
+  `${p.title} ${p.category} ${(p.stack ?? []).join(' ')} project architecture purpose contribution limitations`,
+ )),
 ];

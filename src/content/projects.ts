@@ -200,3 +200,21 @@ visuals: {
 export const publishedProjects = projects.filter(
   (project) => project.reviewed && project.published
 );
+
+export function projectArchitecture(project: ProjectCase): string {
+  const diagram = project.diagram;
+  if (!diagram) return project.decisions.join(' ');
+  const nodes = diagram.nodes.map((node) => node.label).join(', ');
+  const flows = diagram.edges.map((edge) => {
+    const from = diagram.nodes.find((node) => node.id === edge.from)?.label ?? edge.from;
+    const to = diagram.nodes.find((node) => node.id === edge.to)?.label ?? edge.to;
+    return `${from} to ${to}${edge.label ? ` (${edge.label})` : ''}`;
+  }).join('; ');
+  return `Architecture components: ${nodes}. Flow: ${flows}.`;
+}
+
+export function projectSearchText(project: ProjectCase): string {
+  return [project.summary, project.problem, project.role, ...project.decisions,
+    projectArchitecture(project), project.outcomes, project.limitations,
+    ...(project.stack ?? [])].join(' ');
+}

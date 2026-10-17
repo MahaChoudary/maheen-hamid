@@ -1,5 +1,5 @@
 
-import { publishedProjects } from './projects';
+import { projectSearchText, publishedProjects } from './projects';
 import { ecosystem } from './ecosystem';
 import { writingPosts } from './writing';
 
@@ -280,8 +280,8 @@ export const searchEntries: SearchEntry[] = [
     title: p.title,
     type: 'PROJECT',
     href: `/projects/${p.slug}`,
-    body: [p.summary, p.problem, ...p.decisions].join(' '),
-    tags: p.category,
+    body: projectSearchText(p),
+    tags: `${p.title} ${p.category} ${(p.stack ?? []).join(' ')}`,
   })),
   ...writingPosts.map((p) => ({
     title: p.title,
@@ -315,8 +315,8 @@ export const searchEntries: SearchEntry[] = [
     title: 'Projects',
     type: 'PAGE',
     href: '/projects',
-    body: 'Wukala-GPT: multi-agent legal AI, document-grounded retrieval, backend APIs and React.',
-    tags: 'work case studies portfolio Wukala GPT',
+    body: publishedProjects.map(projectSearchText).join(' '),
+    tags: `work case studies portfolio ${publishedProjects.map((project) => `${project.title} ${project.category}`).join(' ')}`,
   },
   {
     title: 'Lab',

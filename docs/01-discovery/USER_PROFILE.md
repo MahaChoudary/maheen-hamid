@@ -13,7 +13,7 @@ Status: Owner-confirmed information; Phase 1 package awaiting approval.
 | Education | BS Computer Science graduate, University of Sialkot, Department of Computer Science |
 | Public portfolio language | English-only |
 | LinkedIn | https://www.linkedin.com/in/maheenhamidd/ |
-| GitHub profile | https://github.com/22101356-Maheen |
+| GitHub profile | https://github.com/maheenhmd|
 | Professional email | maheen.hamid30@gmail.com |
 | Public phone | +92 331 1432480 |
 | CV | Available; owner will supply the file separately |

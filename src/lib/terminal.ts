@@ -1,4 +1,5 @@
 import { capabilities, destinations, profile, resume, type Destination } from '@/content/site';
+import { publishedProjects } from '@/content/projects';
 import { searchPortfolio } from '@/lib/search';
 export type TerminalLink = { label: string; href: string };
 export type TerminalResult = { lines: string[]; links?: TerminalLink[]; action?: 'clear'|'theme'|'ask';question?:string };
@@ -17,7 +18,10 @@ export function executeCommand(raw: string,aiEnabled=false):TerminalResult {
     case 'help': return simple(['AVAILABLE COMMANDS','help · about · whoami · skills · projects · lab · experience · education · contact · resume · cv · clear · theme','open [destination] · search [query] · ask [question]','No real shell commands are executed.']);
     case 'about': case 'whoami': return simple(['MAHEEN HAMID',profile.headline,profile.location,profile.story],[{label:'Read About',href:'/about'}]);
     case 'skills': return simple(capabilities.map(x => `${x.title}: ${x.text}`),[{label:'Capabilities',href:'/about#capabilities'}]);
-    case 'projects': return simple(['Explore Wukala-GPT: retrieval, agents and APIs in a full-stack legal AI application.'],[{label:'Open Projects',href:'/projects'}]);
+    case 'projects': return simple(
+      publishedProjects.map(project => `${project.title}: ${project.summary}`),
+      [...publishedProjects.map(project => ({label:`Open ${project.title}`,href:`/projects/${project.slug}`})),{label:'Open all Projects',href:'/projects'}],
+    );
     case 'lab': return simple(['Systems · Mira · Tech Explainer · Resume–Job Matcher · How My AI Thinks · Portfolio Terminal'],[{label:'Explore Lab',href:'/lab'}]);
     case 'experience': return simple(['Employment history is not currently documented. Explore project work and the resume.']);
     case 'education': return simple([profile.education]);

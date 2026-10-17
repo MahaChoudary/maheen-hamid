@@ -8,15 +8,15 @@ import { retrieve,sources } from '@/server/ai/retrieval';
 import { diagnostic } from '@/server/ai/diagnostics';
 import type { Source } from '@/features/ai/contracts';
 const source=(id:string)=>sources.find(s=>s.id===id)!;
-const selected=['profile-story','cv-project-wukala','cv-backend','capability-01','capability-04'].map(source);
-const payload=(answer:string,ids=['profile-story','cv-project-wukala'])=>({status:'supported',answer,claims:[{text:answer,sourceIds:ids}],limitations:[]});
+const selected=['profile-story','project-wukala-gpt','cv-backend','capability-01','capability-04'].map(source);
+const payload=(answer:string,ids=['profile-story','project-wukala-gpt'])=>({status:'supported',answer,claims:[{text:answer,sourceIds:ids}],limitations:[]});
 beforeEach(()=>{for(const [key,value] of Object.entries({AI_ENABLED:'true',AI_PRIVACY_VERIFIED:'true',AI_PROVIDER:'groq',GROQ_API_KEY:'test-only-key',UPSTASH_REDIS_REST_URL:'https://quota.test',UPSTASH_REDIS_REST_TOKEN:'test',RATE_LIMIT_HMAC_SECRET:'test-only-secret-over-thirty-two-characters',ALLOWED_ORIGINS:'http://localhost:3000',AI_IP_SOURCE:'local'}))vi.stubEnv(key,value)});
 afterEach(()=>{vi.unstubAllEnvs();vi.restoreAllMocks()});
 describe('natural assistant grounding',()=>{
  it('accepts conversational multi-source synthesis independently of claim wording',()=>{
   const answer='Maheen connects retrieval and agent reasoning to complete applications people can use. Her supplied Wukala-GPT project statements connect the AI service to APIs and a React interface, showing how those layers work together.';
-  const data={...payload(answer),claims:[{text:'Her direction combines AI reasoning with usable products.',sourceIds:['profile-story']},{text:'Wukala-GPT connects a retrieval service with APIs and React.',sourceIds:['cv-project-wukala']}]};
-  const result=validateAssistant(data,selected);expect(result.answer).toBe(answer);expect(result.mode).toBe('ai');expect(result.evidence.map(e=>e.quote)).toEqual([source('profile-story').text,source('cv-project-wukala').text]);
+  const data={...payload(answer),claims:[{text:'Her direction combines AI reasoning with usable products.',sourceIds:['profile-story']},{text:'Wukala-GPT connects a retrieval service with APIs and React.',sourceIds:['project-wukala-gpt']}]};
+  const result=validateAssistant(data,selected);expect(result.answer).toBe(answer);expect(result.mode).toBe('ai');expect(result.evidence.map(e=>e.quote)).toEqual([source('profile-story').text,source('project-wukala-gpt').text]);
  });
  it('accepts architectural client/server explanations without inventing clients',()=>{const answer='Maheen connects AI services to client interfaces and backend APIs in her supplied project statements.';expect(validateAssistant(payload(answer),selected).answer).toBe(answer)});
  it('does not police capitalized prose, lexical ratios, or perfect quote reproduction',()=>{
@@ -79,7 +79,7 @@ describe('pipeline stages and retrieval routing',()=>{
  it('completes generation and validation for synthesis with server-owned sources',async()=>{
   const cfg=aiConfig(),p=prepare('assistant','How does Maheen combine RAG and full-stack apps?',cfg);const stages:string[]=[];
   const answer='Maheen connects AI reasoning and retrieval to complete applications. Her supplied project statements describe APIs around the AI service and a React interface.';
-  const ids=p.selected.filter((s:Source)=>s.id==='profile-story'||s.id==='cv-project-wukala').map(s=>s.id);
+  const ids=p.selected.filter((s:Source)=>s.id==='profile-story'||s.id==='project-wukala-gpt').map(s=>s.id);
   const result=await execute(p,cfg,new AbortController().signal,stage=>stages.push(stage),{generate:async()=>({payload:payload(answer,ids)})});
   expect(result.status).toBe('supported');expect(result.mode).toBe('ai');expect(stages).toEqual(['retrieval.completed','generation.started','generation.completed','validation.completed']);
  });
