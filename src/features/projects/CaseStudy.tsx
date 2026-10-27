@@ -235,8 +235,7 @@ export function CaseStudy({
 
           {project.visuals?.placeholders && (
             <p className={styles.placeholderNote}>
-              Illustrative visual previews.
-              Replace with real product screenshots.
+             
             </p>
           )}
 
